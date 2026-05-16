@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecondCortex — Memory That Evolves</title>
+    <meta name="description" content="A fully managed PKM system for AI agents. Automatic capture, semantic extraction, vector search, and procedural memory — zero external dependencies.">
+    <meta property="og:title" content="SecondCortex — Memory That Evolves">
+    <meta property="og:description" content="AI agents forget. SecondCortex remembers. Semantic triple extraction, vector search, and procedural memory — all local, all free.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aldowen.com/secondcortex/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #151d2e;
+            --accent: #10b981;
+            --accent-dim: rgba(16, 185, 129, 0.15);
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --accent-alt: #6366f1;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #475569;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-accent: rgba(16, 185, 129, 0.2);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* ── Background ── */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 20%, rgba(16, 185, 129, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 85% 70%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 50% 0%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .logo span { color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-cta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.6rem 1.4rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-cta:hover { background: #34d399; transform: translateY(-1px); }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 0.4rem 1rem;
+            border-radius: 2px;
+            border: 1px solid var(--border-accent);
+            width: fit-content;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.1s;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        .hero h1 {
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 700;
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        .hero h1 .accent { color: var(--accent); }
+        .hero h1 .dim { color: var(--text-dim); font-weight: 300; }
+
+        .hero-sub {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-muted);
+            max-width: 560px;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.4s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.5s;
+        }
+
+        .btn-primary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.9rem 2rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover { background: #34d399; transform: translateY(-1px); }
+
+        .btn-secondary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.9rem 2rem;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── Stats Strip ── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            margin-top: 4rem;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.7s;
+        }
+
+        .stat {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* ── Problem Section ── */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title .dim { color: var(--text-dim); font-weight: 300; }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            margin-top: 3rem;
+            background: var(--border);
+        }
+
+        .pain-card {
+            background: var(--bg-secondary);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+
+        .pain-card:hover { background: var(--bg-card); }
+
+        .pain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .pain-card:hover::before { opacity: 1; }
+
+        .pain-icon {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pain-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .pain-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .pain-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* ── Pipeline Section ── */
+        .pipeline {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            margin-top: 3rem;
+            background: var(--border);
+        }
+
+        .pipeline-step {
+            background: var(--bg-secondary);
+            padding: 2rem 1.5rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pipeline-step:hover {
+            background: var(--bg-card);
+        }
+
+        .pipeline-step:hover .step-icon {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .step-phase {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .pipeline-step h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-step p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* ── Features Bento ── */
+        .bento {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto;
+            gap: 1px;
+            margin-top: 3rem;
+            background: var(--border);
+        }
+
+        .bento-card {
+            background: var(--bg-secondary);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .bento-card:hover { background: var(--bg-card); }
+
+        .bento-card.wide { grid-column: span 2; }
+        .bento-card.tall { grid-row: span 2; }
+
+        .bento-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 0.25rem 0.6rem;
+            border-radius: 2px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .bento-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .bento-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .bento-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 2px;
+            margin-top: 1rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .bento-code .kw { color: var(--accent); }
+        .bento-code .str { color: #fbbf24; }
+        .bento-code .cmt { color: var(--text-dim); }
+
+        /* ── Code Demo ── */
+        .code-demo {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .terminal {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 3rem;
+        }
+
+        .terminal-header {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #f59e0b; }
+        .terminal-dot.green { background: #10b981; }
+
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 2;
+            color: var(--text-muted);
+        }
+
+        .terminal-body .prompt { color: var(--accent); }
+        .terminal-body .output { color: var(--text-dim); }
+        .terminal-body .highlight { color: var(--accent); }
+        .terminal-body .key { color: #f59e0b; }
+        .terminal-body .value { color: #818cf8; }
+
+        /* ── Tech Stack ── */
+        .tech-strip {
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tech-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 100px;
+        }
+
+        .tech-icon {
+            font-size: 1.8rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .tech-item:hover .tech-icon { opacity: 1; }
+
+        .tech-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+
+        /* ── CTA ── */
+        .cta {
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .cta p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            font-weight: 300;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* ── Footer ── */
+        footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover { color: var(--accent); }
+
+        /* ── Animations ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .pain-grid { grid-template-columns: 1fr; }
+            .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-card.wide { grid-column: span 1; }
+            .bento-card.tall { grid-row: span 1; }
+            .tech-inner { justify-content: center; }
+            .hero { padding: 7rem 1.5rem 3rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats { grid-template-columns: 1fr; }
+            .pipeline-steps { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Nav -->
+    <nav>
+        <div class="logo">SECOND<span>CORTEX</span></div>
+        <ul class="nav-links">
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#pipeline">Pipeline</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#code">Demo</a></li>
+        </ul>
+        <a href="https://github.com/aldow3n-a11y/secondcortex" class="nav-cta" target="_blank">GitHub ↗</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-badge">v0.3 — Free &amp; Local</div>
+        <h1>Memory<br>that <span class="accent">evolves.</span></h1>
+        <p class="hero-sub">
+            AI agents forget everything between sessions. SecondCortex gives them a structured, self-maintaining memory system — automatic capture, semantic extraction, vector search — all running locally, all free.
+        </p>
+        <div class="hero-actions">
+            <a href="https://github.com/aldow3n-a11y/secondcortex" class="btn-primary" target="_blank">Get Started</a>
+            <a href="#pipeline" class="btn-secondary">See How It Works</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">1,050</div>
+                <div class="stat-label">Chunks Embedded</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">3072</div>
+                <div class="stat-label">Embedding Dims</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">$0</div>
+                <div class="stat-label">Monthly Cost</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">0</div>
+                <div class="stat-label">External Deps</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem -->
+    <section class="section" id="problem">
+        <div class="section-label">// The Problem</div>
+        <h2 class="section-title">Agents start<br>every session <span class="dim">from zero.</span></h2>
+        <div class="pain-grid">
+            <div class="pain-card fade-in">
+                <div class="pain-number">01</div>
+                <div class="pain-icon">🧠</div>
+                <h3>Amnesia Loop</h3>
+                <p>Every new session wipes the slate clean. Hard-won insights, debugging lessons, architectural decisions — all gone. You repeat yourself; they repeat mistakes.</p>
+            </div>
+            <div class="pain-card fade-in">
+                <div class="pain-number">02</div>
+                <div class="pain-icon">📝</div>
+                <h3>Manual Memory</h3>
+                <p>You manually write MEMORY.md files that grow into dumping grounds. No structure, no retrieval, no consolidation. Just a growing pile of text.</p>
+            </div>
+            <div class="pain-card fade-in">
+                <div class="pain-number">03</div>
+                <div class="pain-icon">🔍</div>
+                <h3>Lost Knowledge</h3>
+                <p>Important facts get buried in daily logs. Procedures you figured out yesterday? Gone. Bug fixes? Buried. Decisions? Scattered across 50 files.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section class="pipeline" id="pipeline">
+        <div class="section-label">// The Pipeline</div>
+        <h2 class="section-title">From conversation<br>to <span class="accent">knowledge graph.</span></h2>
+        <div class="pipeline-steps">
+            <div class="pipeline-step fade-in">
+                <div class="step-phase">real-time</div>
+                <span class="step-icon">⚡</span>
+                <h3>Capture</h3>
+                <p>Hook intercepts every message. 21 regex patterns + LLM triple extraction. Zero effort required.</p>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-phase">session end</div>
+                <span class="step-icon">📋</span>
+                <h3>Distill</h3>
+                <p>Queue flushes to daily log. Insights tagged. Triples structured. Ready for consolidation.</p>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-phase">nightly</div>
+                <span class="step-icon">🌙</span>
+                <h3>Dream</h3>
+                <p>Three-phase sleep: Light scans recent logs, REM finds patterns, Deep promotes high-signal insights.</p>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-phase">weekly</div>
+                <span class="step-icon">🏗️</span>
+                <h3>Consolidate</h3>
+                <p>Logs → atomic vault notes → MOC links. Procedures extracted. MEMORY.md stays lean.</p>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-phase">anytime</div>
+                <span class="step-icon">🔎</span>
+                <h3>Retrieve</h3>
+                <p>Hybrid search: FTS5 keywords + vector cosine similarity, merged via Reciprocal Rank Fusion.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Bento -->
+    <section class="bento" id="features">
+        <div class="section-label">// Features</div>
+        <h2 class="section-title">Built for <span class="accent">local-first</span><br>AI agents.</h2>
+
+        <div class="bento-grid">
+            <div class="bento-card wide fade-in">
+                <div class="bento-tag">v0.3 NEW</div>
+                <h3>LLM Triple Extraction</h3>
+                <p>Every conversation is analyzed by Gemini Flash for structured knowledge extraction. Not just keyword matching — real semantic understanding that produces <strong>(subject, relation, object)</strong> triples with confidence scores and auto-categorization.</p>
+            </div>
+            <div class="bento-card fade-in">
+                <div class="bento-tag">v0.3 NEW</div>
+                <h3>Vector Search</h3>
+                <p>1,050 chunks embedded with Gemini Embedding-001 (3072 dims). Hybrid RRF search merges FTS5 keyword results with cosine similarity for semantic recall.</p>
+            </div>
+            <div class="bento-card fade-in">
+                <div class="bento-tag">core</div>
+                <h3>21 Saliency Patterns</h3>
+                <p>Regex patterns catch explicit markers ("remember this:", "root cause was") and implicit insights ("gotcha:", "the issue is"). Zero configuration needed.</p>
+            </div>
+            <div class="bento-card fade-in">
+                <div class="bento-tag">v0.3 NEW</div>
+                <h3>Procedural Memory</h3>
+                <p>Auto-extracts multi-step procedures from conversations. "How to deploy FastAPI" becomes a reusable checklist with prerequisites, steps, and confidence scores.</p>
+            </div>
+            <div class="bento-card wide fade-in">
+                <div class="bento-tag">core</div>
+                <h3>Dreaming Engine</h3>
+                <p>Three-phase overnight consolidation: Light scans recent logs, REM identifies cross-topic patterns, Deep promotes high-signal insights to vault notes. Your agent dreams so you don't have to curate.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Demo -->
+    <section class="code-demo" id="code">
+        <div class="section-label">// Try It</div>
+        <h2 class="section-title">Search your <span class="accent">memory.</span></h2>
+
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">secondcortex — hybrid search</div>
+            </div>
+            <div class="terminal-body">
+                <div><span class="prompt">$</span> node embed.mjs search "nginx prefix match root cause"</div>
+                <br>
+                <div><span class="output">🔍 Searching for: "nginx prefix match root cause"</span></div>
+                <br>
+                <div><span class="highlight">[hybrid]</span> <span class="key">memory/2026-05-10.md</span> <span class="output">(RRF: 0.0825)</span></div>
+                <div><span class="output">  Root Causes Found: WA status always "unknown" — bot never wrote...</span></div>
+                <br>
+                <div><span class="highlight">[hybrid]</span> <span class="key">vault/Atlas/Notes/nginx.md</span> <span class="output">(RRF: 0.0159)</span></div>
+                <div><span class="output">  nginx is a high-performance reverse proxy — ^~ prefix ensures...</span></div>
+                <br>
+                <div><span class="prompt">$</span> node extract-procedures.mjs --days=7</div>
+                <br>
+                <div><span class="output">[procedural] Scanning last 7 days of logs...</span></div>
+                <div><span class="output">[procedural] Found 3 procedure(s) in 2026-05-10</span></div>
+                <div><span class="output">  Created: fix-mba-warung-dashboard-502-bad-gateway.md (4 steps)</span></div>
+                <div><span class="output">  Created: migrate-mba-warung-services-from-systemd-to-pm2.md (4 steps)</span></div>
+                <div><span class="output">  ✅ Done! 8 procedures found, 8 vault notes created</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-strip">
+        <div class="tech-inner">
+            <div class="tech-item">
+                <div class="tech-icon">📄</div>
+                <div class="tech-name">Plain Markdown</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🗂️</div>
+                <div class="tech-name">SQLite</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🔍</div>
+                <div class="tech-name">FTS5</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🧠</div>
+                <div class="tech-name">Gemini Flash</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">📐</div>
+                <div class="tech-name">Embedding-001</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🔗</div>
+                <div class="tech-name">Zettelkasten</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">⚡</div>
+                <div class="tech-name">OpenClaw</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🔒</div>
+                <div class="tech-name">Local-First</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="cta">
+        <h2>Stop repeating.<br>Start <span class="accent">remembering.</span></h2>
+        <p>Free. Local. No database required. Runs on any OpenClaw agent.</p>
+        <div class="cta-buttons">
+            <a href="https://github.com/aldow3n-a11y/secondcortex" class="btn-primary" target="_blank">View on GitHub</a>
+            <a href="https://aldowen.com" class="btn-secondary">Back to CORTEX</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div>SECOND<span style="color: var(--accent)">CORTEX</span> — Built by <a href="https://aldowen.com">A.W Wen</a> on <a href="https://github.com/openclaw/openclaw">OpenClaw</a></div>
+        <div><a href="https://github.com/aldow3n-a11y/secondcortex">GitHub</a> · <a href="https://aldowen.com">aldowen.com</a></div>
+    </footer>
+
+    <!-- Intersection Observer for fade-in -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
