@@ -1,0 +1,5 @@
+node_modules/
+embeddings.db
+*.db
+.DS_Store
+.env
