@@ -18,7 +18,7 @@ import { join, basename } from 'path';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const WORKSPACE = process.env.OPENCLAW_WORKSPACE || join(process.env.HOME || '/home/manager', '.openclaw/workspace');
-const GEMINI_API_KEY = process.env.KODA_GEMINI_KEY || 'REDACTED_KODA_KEY';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = 'gemini-2.0-flash';
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const VAULT_NOTES_DIR = join(WORKSPACE, 'vault/Atlas/Notes');

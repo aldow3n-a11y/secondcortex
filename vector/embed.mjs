@@ -34,7 +34,7 @@ const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 const OLLAMA_EMBED_MODEL = process.env.OLLAMA_EMBED_MODEL || 'qwen3-embedding';
 
 // Gemini config (default — free embedding API)
-const GEMINI_API_KEY = process.env.KODA_GEMINI_KEY || 'REDACTED_GEMINI_KEY_2';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_EMBED_MODEL = 'gemini-embedding-001';
 
 // Derived config

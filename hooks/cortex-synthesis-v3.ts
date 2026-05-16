@@ -7,7 +7,7 @@ const QUEUE_FILE = join(WORKSPACE, "PROJECTS/cortex-v2/synthesis_queue.json");
 const DAILY_LOG_DIR = join(WORKSPACE, "memory");
 
 // Gemini extraction config — uses Koda free-tier key
-const GEMINI_API_KEY = process.env.KODA_GEMINI_KEY || "REDACTED_KODA_KEY";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = "gemini-2.0-flash"; // Free tier, fast, good enough for extraction
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const EXTRACTION_ENABLED = true; // Set false to disable LLM extraction (regex-only fallback)
