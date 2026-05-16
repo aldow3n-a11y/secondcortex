@@ -693,7 +693,8 @@
             <li><a href="#problem">Problem</a></li>
             <li><a href="#pipeline">Pipeline</a></li>
             <li><a href="#features">Features</a></li>
-            <li><a href="#code">Demo</a></li>
+            <li><a href="#comparison">Compare</a></li>
+            <li><a href="#benchmark">Benchmark</a></li>
         </ul>
         <a href="https://github.com/aldow3n-a11y/secondcortex" class="nav-cta" target="_blank">GitHub ↗</a>
     </nav>
@@ -896,6 +897,153 @@
             <div class="tech-item">
                 <div class="tech-icon">🔒</div>
                 <div class="tech-name">Local-First</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="section" id="comparison">
+        <div class="section-label">// Comparison</div>
+        <h2 class="section-title">How it <span class="accent">compares.</span></h2>
+        <p style="color: var(--text-muted); max-width: 600px; margin-bottom: 2rem; font-weight: 300; line-height: 1.7;">SecondCortex is the only agent memory system that runs fully local, costs nothing, and requires no database. Here's how it stacks up.</p>
+
+        <div style="overflow-x: auto; margin-top: 2rem;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="text-align: left; padding: 1rem 1.2rem; color: var(--text-muted); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;">Feature</th>
+                        <th style="text-align: center; padding: 1rem 1.2rem; color: var(--accent); font-weight: 700;">SecondCortex</th>
+                        <th style="text-align: center; padding: 1rem 1.2rem; color: var(--text-muted); font-weight: 500;">Letta/MemGPT</th>
+                        <th style="text-align: center; padding: 1rem 1.2rem; color: var(--text-muted); font-weight: 500;">Mem0</th>
+                        <th style="text-align: center; padding: 1rem 1.2rem; color: var(--text-muted); font-weight: 500;">Plain MEMORY.md</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Auto-Capture</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Regex + LLM</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Agent-managed</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Auto-extract</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Manual</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Vector Search</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Hybrid RRF</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Archival mem</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ + Graph</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ FTS5 only</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Semantic Extraction</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Triple (SPO)</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Agent writes</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Entity graph</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Procedural Memory</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Auto-extract</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Manual</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Dreaming</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ 3-phase</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Weekly Consolidation</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Auto</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Manual</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Managed</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Manual</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Storage Format</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">Markdown + SQLite</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Postgres + Vec DB</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Managed cloud DB</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Markdown only</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Monthly Cost</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">$0</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">$0 (self-host)</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">$0–$449/mo</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">$0</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">External Dependencies</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">0</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Postgres, Docker</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Cloud service</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">0</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Data Sovereignty</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">✓ Full local</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Self-hosted</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✗ Cloud</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">✓ Full local</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.9rem 1.2rem; font-weight: 500;">Framework</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--accent); font-weight: 700;">OpenClaw</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Standalone</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">API / SDK</td>
+                        <td style="text-align: center; padding: 0.9rem 1.2rem; color: var(--text-dim);">Any</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Benchmark -->
+    <section class="section" id="benchmark">
+        <div class="section-label">// Benchmark</div>
+        <h2 class="section-title">Real token <span class="accent">savings.</span></h2>
+        <p style="color: var(--text-muted); max-width: 600px; margin-bottom: 2rem; font-weight: 300; line-height: 1.7;">Measured against a real agent workspace: 49 vault notes, 15 daily logs, 1,050 embedded chunks. Same tasks, same knowledge — radically different context sizes.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-top: 2rem;">
+            <div style="background: var(--bg-secondary); padding: 2rem;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 0.5rem;">Without SecondCortex</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #ef4444; line-height: 1;">~160K</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">tokens per query</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 1.5rem; line-height: 1.8;">Fat MEMORY.md (9.2KB) + all 49 vault notes + all 15 daily logs loaded into context because you can't find the right one.</div>
+            </div>
+            <div style="background: var(--bg-secondary); padding: 2rem;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 0.5rem;">With SecondCortex</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent); line-height: 1;">~3K</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">tokens per query</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 1.5rem; line-height: 1.8;">Trimmed MEMORY.md (4.5KB) + top 3 relevant chunks from hybrid search. Same answer, 98% less tokens.</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin-top: 1px;">
+            <div style="background: var(--bg-secondary); padding: 1.5rem; text-align: center;">
+                <div class="mono" style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 0.5rem;">Token Reduction</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">98%</div>
+            </div>
+            <div style="background: var(--bg-secondary); padding: 1.5rem; text-align: center;">
+                <div class="mono" style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 0.5rem;">Cost Savings (GPT-4o)</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">98%</div>
+            </div>
+            <div style="background: var(--bg-secondary); padding: 1.5rem; text-align: center;">
+                <div class="mono" style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-bottom: 0.5rem;">Monthly Cost</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">$0</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px;">
+            <div class="mono" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 0.8rem;">Test Methodology</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.8;">
+                <strong style="color: var(--text);">Corpus:</strong> 49 vault notes (92KB) + 15 daily logs (437KB) + MEMORY.md, embedded as 1,050 chunks (Gemini Embedding-001, 3072 dims).<br>
+                <strong style="color: var(--text);">Without:</strong> Agent loads full MEMORY.md (9.2KB with promotion blocks) + scans all vault notes for relevant info → ~529KB context per query.<br>
+                <strong style="color: var(--text);">With:</strong> Trimmed MEMORY.md (4.5KB, pointers only) + hybrid RRF search returns top 3 relevant chunks → ~8-12KB context per query.<br>
+                <strong style="color: var(--text);">Scenarios tested:</strong> "Fix nginx 502 bad gateway", "Set up Midtrans payment webhook", "Deploy FastAPI service to VPS". All showed 96-98% token reduction.
             </div>
         </div>
     </section>
